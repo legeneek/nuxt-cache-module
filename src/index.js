@@ -76,7 +76,7 @@ module.exports = function cacheRenderer (moduleOptions) {
   this.nuxt.hook('render:route', (url, result, context) => {
     if (moduleOptions.hitHeader && context.req.ctx.hitCache) {
       context.req.ctx.set({
-        [hitHeader]: 'hit'
+        [moduleOptions.hitHeader]: 'hit'
       })
     }
   })

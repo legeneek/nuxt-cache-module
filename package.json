@@ -10,7 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/legeneek/nuxt-page-cache.git"
   },
-  "keywords": ["nuxt", "cache"],
+  "keywords": [
+    "nuxt",
+    "cache"
+  ],
   "author": "legeneek",
   "license": "ISC",
   "bugs": {
