@@ -1,6 +1,6 @@
 {
   "name": "nuxt-cache-module",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "nuxt page cache module",
   "main": "src/index.js",
   "scripts": {
