@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-page-cache",
+  "name": "@legeneek/nuxt-page-cache",
   "version": "0.1.0",
   "description": "nuxt page cache module",
   "main": "src/index.js",
