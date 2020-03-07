@@ -4,14 +4,14 @@ nuxt page cache module. lightweight and straightforward
 ## useage 
 
 ```
-npm i @legeneek/nuxt-page-cache -S
+npm i nuxt-cache-module -S
 ```
 
 ```javascript
 // nuxt.config.js
 
 modules: [
-  ['@legeneek/nuxt-page-cache', 
+  ['nuxt-cache-module', 
     {
       hashKey: true,
       keyBuilder: (route, context) => {
