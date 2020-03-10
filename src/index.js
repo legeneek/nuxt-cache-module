@@ -9,7 +9,9 @@ module.exports = function cacheRenderer (moduleOptions) {
   const keyBuilder = typeof moduleOptions.keyBuilder === 'function'
     ? moduleOptions.keyBuilder : defaultCacheKeyBuilder
   const shouldCache = typeof moduleOptions.shouldCache === 'function'
-    ? moduleOptions.shouldCache : function () { return false }
+    ? moduleOptions.shouldCache : () => false
+  const cacheBuilder = typeof moduleOptions.cacheBuilder === 'function'
+    ? moduleOptions.cacheBuilder : () => null
   // cache expire time in seconds
   const expireTime = moduleOptions.expireTime || defaultExpireTime
   const hashKey = moduleOptions.hashKey
@@ -26,7 +28,7 @@ module.exports = function cacheRenderer (moduleOptions) {
     // rewrite the renderRoute funtion
     renderer.renderRoute = async function (route, context) {
       const cacheable = shouldCache(route, context)
-      const cache = moduleOptions.cache
+      const cache = cacheBuilder(context)
 
       function renderSetCache (cacheKey) {
         return renderRoute(route, context)

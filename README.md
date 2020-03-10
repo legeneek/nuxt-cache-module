@@ -20,7 +20,10 @@ modules: [
       expireTime: 1000,
       versionKey: '',
       appVersion: '',
-      cache: cache,
+      cacheBuilder: (context) => {
+        // build your cache or get it from somewhere
+        return context.req && context.req.ctx.cache
+      },
       hitHeader: 'x-page-cache',
       shouldCache: (route, context) => {
         return true
@@ -39,7 +42,7 @@ modules: [
 | expireTime | number | false | cache expire time, default 1800s
 | versionKey | string | true | app version cache key
 | appVersion | string | true | app version
-| cache | Object | true | the cache instance you use, must have thenable `get` and `set` method
+| cacheBuilder | function | true | pass `context` and return the cache instance you use
 | shouldCache | function | true | filter the route
 | hitHeader | string | fasle | set the given header to `hit` if hit cache
 
