@@ -12,6 +12,8 @@ module.exports = function cacheRenderer (moduleOptions) {
     ? moduleOptions.shouldCache : () => false
   const cacheBuilder = typeof moduleOptions.cacheBuilder === 'function'
     ? moduleOptions.cacheBuilder : () => null
+  const shouldSave = typeof moduleOptions.shouldSave === 'function'
+    ? moduleOptions.shouldSave : () => true
   // cache expire time in seconds
   const expireTime = moduleOptions.expireTime || defaultExpireTime
   const hashKey = moduleOptions.hashKey
@@ -29,11 +31,12 @@ module.exports = function cacheRenderer (moduleOptions) {
     renderer.renderRoute = async function (route, context) {
       const cacheable = shouldCache(route, context)
       const cache = cacheBuilder(context)
+      const saveable = shouldSave(context)
 
       function renderSetCache (cacheKey) {
         return renderRoute(route, context)
           .then(function (result) {
-            if (!result.error) {
+            if (!result.error && saveable) {
               cache.set(cacheKey, serialize(result), 'EX', expireTime).catch(() => {
                 // no handler
               })

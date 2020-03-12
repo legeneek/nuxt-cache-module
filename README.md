@@ -27,6 +27,10 @@ modules: [
       hitHeader: 'x-page-cache',
       shouldCache: (route, context) => {
         return true
+      },
+      shouldSave: (context) => {
+        // error flag found in koa ctx
+        return !context.req.ctx.pageRenderError
       }
   }]
 ]
@@ -43,8 +47,9 @@ modules: [
 | versionKey | string | true | app version cache key
 | appVersion | string | true | app version
 | cacheBuilder | function | true | pass `context` and return the cache instance you use
-| shouldCache | function | true | filter the route
-| hitHeader | string | fasle | set the given header to `hit` if hit cache
+| shouldCache | function | true | filter the route, return false will not use cache
+| hitHeader | string | false | set the given header to `hit` if hit cache
+| shouldSave | function | false | you may not want to save a page with error in cache
 
 ## caveat
 
