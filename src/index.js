@@ -1,8 +1,7 @@
-const path = require('path')
 const crypto = require('crypto')
 const { serialize, deserialize } = require('./serializer')
 const keyPrefix = '_page_cache_'
-const seed = 'dragon'
+const seed = '_s1je4opw'
 const defaultExpireTime = 1800
 
 module.exports = function cacheRenderer (moduleOptions) {
@@ -19,9 +18,7 @@ module.exports = function cacheRenderer (moduleOptions) {
   const hashKey = moduleOptions.hashKey
 
   function defaultCacheKeyBuilder (route, context) {
-    const hostname = (context.req && context.req.ctx.hostname) || ''
-    const cacheKey = path.join(hostname, route)
-    return cacheKey
+    return route
   }
 
   this.nuxt.hook('render:before', (renderer, options) => {
@@ -66,7 +63,7 @@ module.exports = function cacheRenderer (moduleOptions) {
         .then(function (cachedResult) {
           if (cachedResult) {
             // add hit flag
-            context.req.ctx.hitCache = true
+            context.req.hitCache = true
             return deserialize(cachedResult)
           }
           return renderSetCache(cacheKey)
@@ -79,8 +76,8 @@ module.exports = function cacheRenderer (moduleOptions) {
 
   // add cache hit header
   this.nuxt.hook('render:route', (url, result, context) => {
-    if (moduleOptions.hitHeader && context.req.ctx.hitCache) {
-      context.req.ctx.set({
+    if (moduleOptions.hitHeader && context.req.hitCache) {
+      context.res.setHeader({
         [moduleOptions.hitHeader]: 'hit'
       })
     }

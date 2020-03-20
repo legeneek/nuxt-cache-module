@@ -22,7 +22,7 @@ modules: [
       appVersion: '',
       cacheBuilder: (context) => {
         // build your cache or get it from somewhere
-        return context.req && context.req.ctx.cache
+        return cache
       },
       hitHeader: 'x-page-cache',
       shouldCache: (route, context) => {
@@ -30,7 +30,7 @@ modules: [
       },
       shouldSave: (context) => {
         // error flag found in koa ctx
-        return !context.req.ctx.pageRenderError
+        return !context.req.pageRenderError
       }
   }]
 ]
@@ -42,7 +42,7 @@ modules: [
 | Property | Type | Required? | Description 
 |:---|:---|:---|:---|
 | hashKey | boolean | false | set `true` will hash the cache key
-| keyBuilder | function | false | used to create the cache key, receive `route` and `context` params same as nuxt's renderRoute function [official doc](https://nuxtjs.org/api/nuxt-render-route#nuxt-renderroute-route-context-), default builder use url as the key
+| keyBuilder | function | false | used to create the cache key, receive `route` and `context` params same as nuxt's renderRoute function [official doc](https://nuxtjs.org/api/nuxt-render-route#nuxt-renderroute-route-context-), default builder use `route` as the key
 | expireTime | number | false | cache expire time, default 1800s
 | versionKey | string | true | app version cache key
 | appVersion | string | true | app version
@@ -53,7 +53,8 @@ modules: [
 
 ## caveat
 
-- you should store the appVersion(eg: commit hash) in the cache before render page. version not match will result in not use cache
+- `shouldCache` called before page render, `shouldSave` called after page render.
+- you should store the appVersion(eg: commit hash) in the cache before render page, version not match will result in not use cache.
 - your cache instance should support `get` and `set` method which used as follows:
 
 ```javascript
