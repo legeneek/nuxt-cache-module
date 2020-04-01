@@ -29,7 +29,7 @@ modules: [
         return true
       },
       shouldSave: (context) => {
-        // error flag found in koa ctx
+        // error flag found
         return !context.req.pageRenderError
       }
   }]
