@@ -1,7 +1,7 @@
 # nuxt-cache-module
 nuxt page cache module. lightweight and straightforward
 
-## useage 
+## usage 
 
 ```
 npm i nuxt-cache-module -S
