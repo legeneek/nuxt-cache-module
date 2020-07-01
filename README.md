@@ -62,3 +62,78 @@ cache.get(key).then((res) => {}).catch(() => {})
 
 cache.set(key, val, 'EX', expireTime).then(() => {}).catch(() => {})
 ```
+
+## example
+
+this cache is up to the user to provide.
+
+the example below use `koa` and `ioredis`.
+
+server.js
+```
+const Redis = require('ioredis')
+
+// build the cache instance before server start listen
+const redisClient = await new Promise((resolve, reject) => {
+    const client = new Redis({
+      host: config.redis.host,
+      port: config.redis.port,
+      connectTimeout: 10000,
+      maxRetriesPerRequest: 1,
+      keyPrefix: '',
+      retry_strategy (times) {
+        // reconnect after
+        return 100
+      }
+    })
+    client.on('connect', () => {
+      resolve(client)
+    })
+    client.on('error', (e) => {
+      reject(e)
+    })
+  }).catch((e) => {
+  })
+
+ // each time restart server will flush the page cache and set the right version(eg:commit hash)
+ // not a good solution,  should do it in pre-publish script
+ if (redisClient) {
+    redisClient.sendCommand(new Redis.Command('flushall'))
+   // the appVersion and youAppVersionKey also used in nuxt.config.js
+    redisClient.set(youAppVersionKey, appVersion)
+ }
+
+ // inject cache to ctx in server app middleware, so the cache builder can get it.
+ app.use(async (ctx, next) => {
+    if (redisClient) {
+      ctx.cache = redisClient
+    }
+    await next()
+ })
+```
+
+nuxt.config.js
+```
+['nuxt-cache-module', {
+      hashKey: true,
+      keyBuilder: (route, context) => {
+      },
+      expireTime: 1800,
+      versionKey: youAppVersionKey,
+      appVersion: appVersion,
+      hitHeader: 'x-page-cache',
+      cacheBuilder: (context) => {
+        // get cache from ctx
+        return context.req && context.req.ctx.cache
+      },
+      shouldCache: (route, context) => {
+          const r = route.split(/[?#]/)[0]
+          // I use regex to check the route, only home page is allowed to cache
+          if (pageRegex.home.test(r)) {
+            return true
+          }
+      },
+      shouldSave: (context) => {
+      }
+    }]
+```
