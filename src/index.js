@@ -28,12 +28,11 @@ module.exports = function cacheRenderer (moduleOptions) {
     renderer.renderRoute = async function (route, context) {
       const cacheable = shouldCache(route, context)
       const cache = cacheBuilder(context)
-      const saveable = shouldSave(context)
 
       function renderSetCache (cacheKey) {
         return renderRoute(route, context)
           .then(function (result) {
-            if (!result.error && saveable) {
+            if (!result.error && shouldSave(context)) {
               cache.set(cacheKey, serialize(result), 'EX', expireTime).catch(() => {
                 // no handler
               })
