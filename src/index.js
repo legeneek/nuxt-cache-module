@@ -1,6 +1,5 @@
 const crypto = require('crypto')
 const { serialize, deserialize } = require('./serializer')
-const keyPrefix = '_page_cache_'
 const seed = '_s1je4opw'
 const defaultExpireTime = 1800
 
@@ -45,15 +44,7 @@ module.exports = function cacheRenderer (moduleOptions) {
         return renderRoute(route, context)
       }
 
-      const version = await cache.get(moduleOptions.versionKey).catch(() => {
-        return null
-      })
-
-      if (version !== moduleOptions.appVersion) {
-        return renderRoute(route, context)
-      }
-
-      const key = keyPrefix + keyBuilder(route, context)
+      const key = keyBuilder(route, context)
       const cacheKey = hashKey
         ? crypto.createHmac('md5', seed).update(key).digest('hex')
         : key

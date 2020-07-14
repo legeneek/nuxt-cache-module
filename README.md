@@ -18,8 +18,6 @@ modules: [
         return ''
       },
       expireTime: 1000,
-      versionKey: '',
-      appVersion: '',
       cacheBuilder: (context) => {
         // build your cache or get it from somewhere
         return cache
@@ -44,8 +42,6 @@ modules: [
 | hashKey | boolean | false | set `true` will hash the cache key
 | keyBuilder | function | false | used to create the cache key, receive `route` and `context` params same as nuxt's renderRoute function [official doc](https://nuxtjs.org/api/nuxt-render-route#nuxt-renderroute-route-context-), default builder use `route` as the key
 | expireTime | number | false | cache expire time, default 1800s
-| versionKey | string | true | app version cache key
-| appVersion | string | true | app version
 | cacheBuilder | function | true | pass `context` and return the cache instance you use
 | shouldCache | function | true | filter the route, return false will not use cache
 | hitHeader | string | false | set the given header to `hit` if hit cache
@@ -54,7 +50,6 @@ modules: [
 ## caveat
 
 - `shouldCache` called before page render, `shouldSave` called after page render.
-- you should store the appVersion(eg: commit hash) in the cache before render page, version not match will result in not use cache.
 - your cache instance should support `get` and `set` method which used as follows:
 
 ```javascript
@@ -80,7 +75,8 @@ const redisClient = await new Promise((resolve, reject) => {
       port: config.redis.port,
       connectTimeout: 10000,
       maxRetriesPerRequest: 1,
-      keyPrefix: '',
+      // set app version in the key prefix
+      keyPrefix: `${yourproject}${yourversion}`,
       retry_strategy (times) {
         // reconnect after
         return 100
@@ -94,14 +90,6 @@ const redisClient = await new Promise((resolve, reject) => {
     })
   }).catch((e) => {
   })
-
- // each time restart server will flush the page cache and set the right version(eg:commit hash)
- // not a good solution,  should do it in pre-publish script
- if (redisClient) {
-    redisClient.sendCommand(new Redis.Command('flushall'))
-   // the appVersion and youAppVersionKey also used in nuxt.config.js
-    redisClient.set(youAppVersionKey, appVersion)
- }
 
  // inject cache to ctx in server app middleware, so the cache builder can get it.
  app.use(async (ctx, next) => {
@@ -119,8 +107,6 @@ nuxt.config.js
       keyBuilder: (route, context) => {
       },
       expireTime: 1800,
-      versionKey: youAppVersionKey,
-      appVersion: appVersion,
       hitHeader: 'x-page-cache',
       cacheBuilder: (context) => {
         // get cache from ctx
