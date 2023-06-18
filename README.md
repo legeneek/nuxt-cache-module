@@ -1,5 +1,5 @@
 # nuxt-cache-module
-nuxt page cache module. lightweight and straightforward
+nuxt 2 page cache module. lightweight and straightforward
 
 ## usage 
 
